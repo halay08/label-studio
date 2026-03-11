@@ -1,0 +1,1 @@
+# Optional deps cho Label Studio container (vd. label-studio-sdk). Để trống nếu không cần.

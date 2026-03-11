@@ -1,0 +1,30 @@
+title: Anomaly — Polygon Labeling
+type: community
+group: Computer Vision
+order: 0
+image: /static/templates/anomaly-polygon.png
+details: |
+  <h1>Drone Infrastructure Anomaly Detection</h1>
+  <dl>
+    <dt>Description</dt>
+    <dd>Draw polygons to annotate anomalies on drone imagery of infrastructure.</dd>
+    <dt>Supported Labels</dt>
+    <dd>water_leak, crack, rust, corrosion, vegetation, debris, structural_damage</dd>
+    <dt>Instructions</dt>
+    <dd>Select a label first, then click on the image to start drawing a polygon.</dd>
+  </dl>
+config: |
+  <!-- Label Studio — Polygon drawing. Must use <Label> tags for label buttons to appear in the UI. -->
+  <View>
+    <Header value="Select a label, then click on the image to draw a polygon" />
+    <Image name="image" value="$image" zoom="true" />
+    <PolygonLabels name="anomaly" toName="image" strokeWidth="2" pointSize="small" opacity="0.6">
+      <Label value="water_leak" background="red" />
+      <Label value="crack" background="blue" />
+      <Label value="rust" background="orange" />
+      <Label value="corrosion" background="purple" />
+      <Label value="vegetation" background="green" />
+      <Label value="debris" background="brown" />
+      <Label value="structural_damage" background="darkred" />
+    </PolygonLabels>
+  </View>
