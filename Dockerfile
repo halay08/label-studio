@@ -16,6 +16,8 @@ RUN chmod +x /entrypoint.sh
 
 # Copy init script vào container (seed template khi start)
 COPY init_template.sh /label-studio/init_template.sh
+COPY auto_attach_ml_backend.sh /label-studio/auto_attach_ml_backend.sh
+RUN chmod +x /label-studio/init_template.sh /label-studio/auto_attach_ml_backend.sh
 
 # Inject custom template vào gallery của Label Studio
 # Khi tạo project → Computer Vision → thấy "Anomaly — Polygon Labeling"

@@ -9,15 +9,25 @@ details: |
     <dt>Description</dt>
     <dd>Draw polygons to annotate anomalies on drone imagery of infrastructure.</dd>
     <dt>Supported Labels</dt>
-    <dd>water_leak, crack, rust, corrosion, vegetation, debris, structural_damage</dd>
+    <dd>water_leak, crack, rust, corrosion, vegetation, debris, structural_damage, puddle</dd>
     <dt>Instructions</dt>
     <dd>Select a label first, then click on the image to start drawing a polygon.</dd>
   </dl>
 config: |
   <!-- Label Studio — Polygon drawing. Must use <Label> tags for label buttons to appear in the UI. -->
   <View>
-    <Header value="Select a label, then click on the image to draw a polygon" />
+    <Header value="Select a label, then click on the defect (or draw manually)" />
     <Image name="image" value="$image" zoom="true" />
+    <KeyPointLabels name="sam_prompt" toName="image" smart="true" smartOnly="true">
+      <Label value="water_leak" background="red" />
+      <Label value="crack" background="blue" />
+      <Label value="rust" background="orange" />
+      <Label value="corrosion" background="purple" />
+      <Label value="vegetation" background="green" />
+      <Label value="debris" background="brown" />
+      <Label value="structural_damage" background="darkred" />
+      <Label value="puddle" background="cyan" />
+    </KeyPointLabels>
     <PolygonLabels name="anomaly" toName="image" strokeWidth="2" pointSize="small" opacity="0.6">
       <Label value="water_leak" background="red" />
       <Label value="crack" background="blue" />
@@ -26,5 +36,6 @@ config: |
       <Label value="vegetation" background="green" />
       <Label value="debris" background="brown" />
       <Label value="structural_damage" background="darkred" />
+      <Label value="puddle" background="cyan" />
     </PolygonLabels>
   </View>
