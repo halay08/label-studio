@@ -1,8 +1,10 @@
-# Base image cho Label Studio — tag: sphere-ai-label-studio-base
-# Build: docker build -t sphere-ai-label-studio-base .
-# sphere-ai/labeling/Dockerfile kế thừa FROM image này.
+# Base image: dùng bản **gốc** từ Docker Hub làm layer 0.
+# Nếu bạn `docker build -t heartexlab/label-studio:latest` trong khi máy đã có tag đó = bản custom cũ,
+# Docker sẽ FROM nhầm chính image cũ → entrypoint/script có thể không đúng. Trước khi build:
+#   docker pull heartexlab/label-studio:latest
+# hoặc tag output khác (vd. heartexlab/label-studio:sphere-custom).
 # Venv path từ official image: /label-studio/.venv
-FROM heartexlabs/label-studio:latest
+FROM heartexlab/label-studio:latest
 
 USER root
 
@@ -19,7 +21,7 @@ COPY init_template.sh /label-studio/init_template.sh
 COPY auto_attach_ml_backend.sh /label-studio/auto_attach_ml_backend.sh
 RUN chmod +x /label-studio/init_template.sh /label-studio/auto_attach_ml_backend.sh
 
-# Inject custom template vào gallery của Label Studio
+# Gallery template (config.yml + label_config.xml + …); init_template.sh đọc label_config.xml từ cùng thư mục này
 # Khi tạo project → Computer Vision → thấy "Anomaly — Polygon Labeling"
 COPY template/ \
      /label-studio/label_studio/annotation_templates/computer-vision/anomaly-polygon/

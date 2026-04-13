@@ -11,23 +11,17 @@ details: |
     <dt>Supported Labels</dt>
     <dd>water_leak, crack, rust, corrosion, vegetation, debris, structural_damage, puddle</dd>
     <dt>Instructions</dt>
-    <dd>Select a label first, then click on the image to start drawing a polygon.</dd>
+    <dd>Select a label from the bar below, then draw a polygon on the image.</dd>
+    <dt>Note</dt>
+    <dd>One label row only (PolygonLabels). A separate KeyPointLabels strip used to exist for SAM &quot;smart&quot; prompts but duplicated every class in the UI — removed on purpose.</dd>
   </dl>
+# Labeling XML: giữ đồng bộ với template/label_config.xml (cùng thư mục gallery, một lần COPY template/).
 config: |
-  <!-- Label Studio — Polygon drawing. Must use <Label> tags for label buttons to appear in the UI. -->
+  <!-- Single PolygonLabels toolbar — no KeyPointLabels (would duplicate class rows in UI). -->
+  <!-- SAM ML backend writes polygonlabels with from_name=anomaly; training exports YOLO from polygons. -->
   <View>
     <Header value="Select a label, then click on the defect (or draw manually)" />
     <Image name="image" value="$image" zoom="true" />
-    <KeyPointLabels name="sam_prompt" toName="image" smart="true" smartOnly="true">
-      <Label value="water_leak" background="red" />
-      <Label value="crack" background="blue" />
-      <Label value="rust" background="orange" />
-      <Label value="corrosion" background="purple" />
-      <Label value="vegetation" background="green" />
-      <Label value="debris" background="brown" />
-      <Label value="structural_damage" background="darkred" />
-      <Label value="puddle" background="cyan" />
-    </KeyPointLabels>
     <PolygonLabels name="anomaly" toName="image" strokeWidth="2" pointSize="small" opacity="0.6">
       <Label value="water_leak" background="red" />
       <Label value="crack" background="blue" />

@@ -1,0 +1,16 @@
+<!-- Single PolygonLabels toolbar — no KeyPointLabels (would duplicate class rows in UI). -->
+<!-- SAM ML backend writes polygonlabels with from_name=anomaly; training exports YOLO from polygons. -->
+<View>
+  <Header value="Select a label, then click on the defect (or draw manually)" />
+  <Image name="image" value="$image" zoom="true" />
+  <PolygonLabels name="anomaly" toName="image" strokeWidth="2" pointSize="small" opacity="0.6">
+    <Label value="water_leak" background="red" />
+    <Label value="crack" background="blue" />
+    <Label value="rust" background="orange" />
+    <Label value="corrosion" background="purple" />
+    <Label value="vegetation" background="green" />
+    <Label value="debris" background="brown" />
+    <Label value="structural_damage" background="darkred" />
+    <Label value="puddle" background="cyan" />
+  </PolygonLabels>
+</View>

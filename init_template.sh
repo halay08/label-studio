@@ -9,7 +9,6 @@ LS_URL="${LABEL_STUDIO_URL:-http://localhost:8080}"
 LS_USER="${LABEL_STUDIO_USERNAME:-ai-engineer@localhost}"
 LS_PYTHON="/label-studio/.venv/bin/python"
 LS_MANAGE_DIR="/label-studio/label_studio"
-LABEL_CONFIG_PATH="/label-studio/label_config.xml"
 MAX_WAIT=120
 INTERVAL=5
 
@@ -45,7 +44,11 @@ from users.models import User
 from projects.models import Project
 
 TEMPLATE_NAME = "⬡ Sphere Anomaly Template"
-LABEL_CONFIG_PATH = "/label-studio/label_config.xml"
+# Cùng file với COPY template/ → annotation_templates/.../anomaly-polygon/
+LABEL_CONFIG_PATH = (
+    "/label-studio/label_studio/annotation_templates/"
+    "computer-vision/anomaly-polygon/label_config.xml"
+)
 DESCRIPTION = (
     "Polygon labeling template — water_leak, crack, rust, corrosion, "
     "vegetation, debris, structural_damage. DO NOT DELETE."

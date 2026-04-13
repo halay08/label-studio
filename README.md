@@ -20,6 +20,10 @@ This image serves as a **reusable base** for Label Studio deployments. It adds:
 
 Child images extend this base to inject project-specific annotation templates.
 
+The bundled template `template/config.yml` (**Anomaly — Polygon Labeling**) uses **only** `<PolygonLabels name="anomaly">` so the UI shows **one** row of anomaly types. (An older revision also had `<KeyPointLabels>` for SAM smart prompts, which made Label Studio render the **same** classes twice with different hotkeys.) `init_template.sh` reads `label_config.xml` from the same gallery path: `annotation_templates/computer-vision/anomaly-polygon/` (one `COPY template/` in the Dockerfile).
+
+**Existing projects** keep their saved labeling config until you change it: **Project → Settings → Labeling Interface** → paste the XML from the template (or recreate the project from the gallery template after rebuilding the image).
+
 ---
 
 ## Directory Structure
@@ -31,7 +35,7 @@ label-studio/
 ├── init_template.sh    # Seeds a template project via Django ORM on first startup
 ├── auto_attach_ml_backend.sh # Auto-connect ML backend to new projects
 ├── requirements.txt    # Extra Python dependencies to install into the Label Studio venv
-└── template/           # (Optional) custom annotation templates — handled by child images
+└── template/           # config.yml (gallery) + label_config.xml (seed project) + thumbnail
 ```
 
 ---
