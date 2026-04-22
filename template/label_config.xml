@@ -1,16 +1,17 @@
+<!-- Keep in sync: sphere-ai/shared/services/label_studio_api.py :: ANOMALY_POLYGON_LABEL_CONFIG -->
 <!-- Single PolygonLabels toolbar — no KeyPointLabels (would duplicate class rows in UI). -->
 <!-- SAM ML backend writes polygonlabels with from_name=anomaly; training exports YOLO from polygons. -->
 <View>
   <Header value="Select a label, then click on the defect (or draw manually)" />
   <Image name="image" value="$image" zoom="true" />
   <PolygonLabels name="anomaly" toName="image" strokeWidth="2" pointSize="small" opacity="0.6">
-    <Label value="water_leak" background="red" />
-    <Label value="crack" background="blue" />
-    <Label value="rust" background="orange" />
-    <Label value="corrosion" background="purple" />
-    <Label value="vegetation" background="green" />
-    <Label value="debris" background="brown" />
-    <Label value="structural_damage" background="darkred" />
-    <Label value="puddle" background="cyan" />
+    <Label value="water_leak" background="red" hotkey="1" />
+    <Label value="crack" background="blue" hotkey="2" />
+    <Label value="rust" background="orange" hotkey="3" />
+    <Label value="corrosion" background="purple" hotkey="4" />
+    <Label value="vegetation" background="green" hotkey="5" />
+    <Label value="debris" background="brown" hotkey="6" />
+    <Label value="structural_damage" background="darkred" hotkey="7" />
+    <Label value="puddle" background="cyan" hotkey="8" />
   </PolygonLabels>
 </View>
