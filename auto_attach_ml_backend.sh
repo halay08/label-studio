@@ -5,9 +5,10 @@
 set -euo pipefail
 
 LS_URL="${LABEL_STUDIO_URL:-http://localhost:8080}"
-ML_BACKEND_URL="${AUTO_ATTACH_ML_BACKEND_URL:-http://sphere-ai-sam-backend:9090}"
+ML_BACKEND_URL="${AUTO_ATTACH_ML_BACKEND_URL:-http://sphere-ai-ml-backend:9090}"
 ML_BACKEND_TITLE="${AUTO_ATTACH_ML_BACKEND_TITLE:-ML Backend}"
-POLL_INTERVAL="${AUTO_ATTACH_POLL_INTERVAL:-5}"
+POLL_INTERVAL="${AUTO_ATTACH_POLL_INTERVAL:-2}"
+ML_BACKEND_TIMEOUT="${AUTO_ATTACH_ML_BACKEND_TIMEOUT:-300}"
 # When true, also turn on Annotation settings: use predictions to pre-label + load predictions on task open.
 AUTO_ATTACH_ENABLE_PRELABELING="${AUTO_ATTACH_ENABLE_PRELABELING:-true}"
 # Label Studio uses fast_first(ml_backends.all()) — nhiều backend thì có thể gọi nhầm cái cũ.
@@ -31,6 +32,7 @@ while true; do
   DJANGO_SETTINGS_MODULE=core.settings.label_studio \
   AUTO_ATTACH_ML_BACKEND_URL="${ML_BACKEND_URL}" \
   AUTO_ATTACH_ML_BACKEND_TITLE="${ML_BACKEND_TITLE}" \
+  AUTO_ATTACH_ML_BACKEND_TIMEOUT="${ML_BACKEND_TIMEOUT}" \
   AUTO_ATTACH_ENABLE_PRELABELING="${AUTO_ATTACH_ENABLE_PRELABELING}" \
   AUTO_ATTACH_EXCLUSIVE_ML_BACKENDS="${AUTO_ATTACH_EXCLUSIVE_ML_BACKENDS}" \
   "$LS_PYTHON" - <<'PYEOF'
@@ -56,6 +58,12 @@ def _strip_env_quotes(value: str) -> str:
 
 backend_url = _strip_env_quotes(os.environ["AUTO_ATTACH_ML_BACKEND_URL"])
 backend_title = _strip_env_quotes(os.environ["AUTO_ATTACH_ML_BACKEND_TITLE"]) or "ML Backend"
+try:
+    backend_timeout = int(os.environ.get("AUTO_ATTACH_ML_BACKEND_TIMEOUT", "300"))
+except Exception:
+    backend_timeout = 300
+if backend_timeout < 30:
+    backend_timeout = 30
 enable_prelabel = os.environ.get("AUTO_ATTACH_ENABLE_PRELABELING", "true").lower() in (
     "1",
     "true",
@@ -70,7 +78,40 @@ exclusive_ml = os.environ.get("AUTO_ATTACH_EXCLUSIVE_ML_BACKENDS", "true").lower
 if not backend_url:
     raise SystemExit(0)
 
+
+def _legacy_ml_hostname(url: str) -> bool:
+    """URL ML backend kiểu Docker/ECS nội bộ — luôn rewrite sang canonical (HTTPS ALB)."""
+    low = (url or "").lower()
+    markers = (
+        "sphere-ai-sam-backend",
+        "sphere-ai-ml-backend",
+        "sam-backend",
+    )
+    return any(m in low for m in markers)
+
+
 for project in Project.objects.all().order_by("id"):
+    # Trước khi xóa row khác URL: ghi đè hostname legacy → canonical (giữ PK, UI không bị kẹt URL cũ).
+    for mlb in list(MLBackend.objects.filter(project=project)):
+        if mlb.url == backend_url:
+            continue
+        if not _legacy_ml_hostname(mlb.url):
+            continue
+        upd = []
+        mlb.url = backend_url
+        upd.append("url")
+        if mlb.title != backend_title:
+            mlb.title = backend_title
+            upd.append("title")
+        if getattr(mlb, "auto_update", True):
+            mlb.auto_update = False
+            upd.append("auto_update")
+        mlb.save(update_fields=upd)
+        print(
+            "INFO: [auto_attach_ml_backend] Rewrote legacy ML backend URL → "
+            f"{backend_url!r} on project '{project.title}' (id={project.id}), pk={mlb.pk}"
+        )
+
     if exclusive_ml:
         others = MLBackend.objects.filter(project=project).exclude(url=backend_url)
         if others.exists():
@@ -100,7 +141,7 @@ for project in Project.objects.all().order_by("id"):
                 title=backend_title,
                 url=backend_url,
                 is_interactive=True,
-                timeout=120,
+                timeout=backend_timeout,
                 state="DI",
                 auto_update=False,
             )
@@ -125,11 +166,14 @@ for project in Project.objects.all().order_by("id"):
         if getattr(mlb, "auto_update", True):
             mlb.auto_update = False
             update_fields.append("auto_update")
+        if getattr(mlb, "timeout", None) != backend_timeout:
+            mlb.timeout = backend_timeout
+            update_fields.append("timeout")
         if update_fields:
             mlb.save(update_fields=update_fields)
             print(
                 f"INFO: [auto_attach_ml_backend] Synced ML backend on project '{project.title}' "
-                f"(id={project.id}): {', '.join(update_fields)} → title={backend_title!r}, auto_update=False"
+                f"(id={project.id}): {', '.join(update_fields)} → title={backend_title!r}, timeout={backend_timeout}, auto_update=False"
             )
 
     has_backend = mlb is not None

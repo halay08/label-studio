@@ -97,6 +97,6 @@ volumes:
 | `LABEL_STUDIO_USERNAME` | `ai-engineer@localhost` | Default admin user email |
 | `LABEL_STUDIO_PASSWORD` | `changeme` | Default admin user password |
 | `LABEL_STUDIO_HOST` | `http://localhost:8080` | Public host URL shown in Label Studio UI |
-| `AUTO_ATTACH_ML_BACKEND_URL` | `http://sphere-ai-sam-backend:9090` | ML backend URL to auto-connect for every project |
-| `AUTO_ATTACH_ML_BACKEND_TITLE` | `SphereAI SAM Backend` | Display title for auto-connected backend |
+| `AUTO_ATTACH_ML_BACKEND_URL` | `http://sphere-ai-ml-backend:9090` | ML backend URL to auto-connect for every project |
+| `AUTO_ATTACH_ML_BACKEND_TITLE` | `SphereAI ML Backend` | Display title for auto-connected backend |
 | `AUTO_ATTACH_POLL_INTERVAL` | `5` | Poll interval in seconds for new projects |
