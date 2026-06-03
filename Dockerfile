@@ -16,12 +16,10 @@ RUN /label-studio/.venv/bin/pip install --no-cache-dir -r /tmp/requirements.txt
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Copy init script vào container (seed template khi start)
-COPY init_template.sh /label-studio/init_template.sh
 COPY auto_attach_ml_backend.sh /label-studio/auto_attach_ml_backend.sh
-RUN chmod +x /label-studio/init_template.sh /label-studio/auto_attach_ml_backend.sh
+RUN chmod +x /label-studio/auto_attach_ml_backend.sh
 
-# Gallery template (config.yml + label_config.xml + …); init_template.sh đọc label_config.xml từ cùng thư mục này
+# Gallery template (config.yml + label_config.xml + …)
 # Khi tạo project → Computer Vision → thấy "Anomaly — Polygon Labeling"
 COPY template/ \
      /label-studio/label_studio/annotation_templates/computer-vision/anomaly-polygon/
